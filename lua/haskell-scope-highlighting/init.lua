@@ -8,8 +8,6 @@ function M.setup(opts)
 
 	highlighter.setup(options.opts)
 
-	vim.cmd([[autocmd FileType haskell set nocursorline]])
-
 	vim.g.__haskell_scope_highlighting_setup_completed = true
 end
 

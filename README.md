@@ -40,6 +40,8 @@ With lazy.nvim,
 
 ## Customisation
 
+### Configure highlight groups
+
 Link highlight groups
 
 ```vim
@@ -73,8 +75,17 @@ hi! HaskellVariableDeclaredWithinParent3 guifg=orange
 
 hi! HaskellVariableDeclaredWithinFile guifg=orange
 hi! HaskellVariableNotDeclaredWithinFile guifg=red
-
 ```
+
+If you want to see only up to depth 1, you can just set the same colour for Parent2, 3, ..., N.  
+
+### Partially enable nvim-treesitter highlighting.
+
+Dynamic context highlighting can be used with treesitter highlighting, but it can be distracting to have all highlighting enabled.  
+If you feel the same, you can configure treesitter highlighting yourself.
+
+Create a file in `~/.config/nvim/queries/haskell/highlights.scm` to define treesitter highlighting on your own.  
+You can find the query file from [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter/blob/master/queries/haskell/highlights.scm).
 
 ## Commands
 

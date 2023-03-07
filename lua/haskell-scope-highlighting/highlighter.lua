@@ -16,49 +16,60 @@ function M.setup(opts)
 	if utils.string_begins_with(colorscheme, "tokyonight") then
 		colorscheme = "tokyonight"
 	end
-	local hlgroup
-	if colorscheme == "tokyonight" then
-		hlgroup = "CursorLine"
-	else
-		hlgroup = "CursorLine"
-	end
+	local hlgroup = "CursorLine"
 	if vim.fn.hlexists("HaskellCurrentScope") == 0 then
 		vim.cmd([[hi! link HaskellCurrentScope ]] .. hlgroup)
+		vim.o.cursorline = false
 	end
 
-	for i = 1, 9 do
-		if vim.fn.hlexists("HaskellParentScope" .. i) == 0 then
-			vim.cmd([[hi HaskellParentScope]] .. i .. [[ guibg=#]] .. i .. i .. i .. i .. i .. i)
+	if colorscheme == "tokyonight" then
+		for i = 1, 20 do
+			if vim.fn.hlexists("HaskellParentScope" .. i) == 0 then
+				vim.cmd([[hi! link HaskellParentScope]] .. i .. [[ Pmenu]])
+			end
+			if vim.fn.hlexists("HaskellVariableDeclaredWithinParent" .. i) == 0 then
+				vim.cmd([[hi! link HaskellVariableDeclaredWithinParent]] .. i .. [[ String]])
+			end
 		end
-		if vim.fn.hlexists("HaskellVariableDeclaredWithinParent" .. i) == 0 then
-			vim.cmd([[hi! HaskellVariableDeclaredWithinParent]] .. i .. [[ guifg=#]] .. i .. i .. i .. i .. i .. i)
+
+		if vim.fn.hlexists("HaskellVariableDeclaredWithinFile") == 0 then
+			vim.cmd([[hi! link HaskellVariableDeclaredWithinFile Statement]])
+		end
+		if vim.fn.hlexists("HaskellVariableDeclaredWithinScope") == 0 then
+			vim.cmd([[hi! link HaskellVariableDeclaredWithinScope MoreMsg]])
+		end
+		if vim.fn.hlexists("HaskellVariableDeclarationWithinScope") == 0 then
+			vim.cmd([[hi! link HaskellVariableDeclarationWithinScope Type]])
+		end
+
+		if vim.fn.hlexists("HaskellVariableNotDeclaredWithinFile") == 0 then
+			vim.cmd([[hi! link HaskellVariableNotDeclaredWithinFile @parameter]])
+		end
+	else
+		for i = 1, 20 do
+			if vim.fn.hlexists("HaskellParentScope" .. i) == 0 then
+				vim.cmd([[hi HaskellParentScope]] .. i .. [[ guibg=black]])
+			end
+			if vim.fn.hlexists("HaskellVariableDeclaredWithinParent" .. i) == 0 then
+				vim.cmd([[hi! HaskellVariableDeclaredWithinParent]] .. i .. [[ guifg=green]])
+			end
+		end
+
+		hlgroup = "Keyword"
+		if vim.fn.hlexists("HaskellVariableDeclaredWithinFile") == 0 then
+			vim.cmd([[hi! link HaskellVariableDeclaredWithinFile ]] .. hlgroup)
+		end
+		if vim.fn.hlexists("HaskellVariableDeclaredWithinScope") == 0 then
+			vim.cmd([[hi! HaskellVariableDeclaredWithinScope guifg=lightblue]])
+		end
+		if vim.fn.hlexists("HaskellVariableDeclarationWithinScope") == 0 then
+			vim.cmd([[hi! HaskellVariableDeclarationWithinScope guifg=blue]])
+		end
+
+		if vim.fn.hlexists("HaskellVariableNotDeclaredWithinFile") == 0 then
+			vim.cmd([[hi! HaskellVariableNotDeclaredWithinFile guifg=orange]])
 		end
 	end
-
-	hlgroup = "Keyword"
-	if vim.fn.hlexists("HaskellVariableDeclaredWithinFile") == 0 then
-		vim.cmd([[hi! link HaskellVariableDeclaredWithinFile ]] .. hlgroup)
-	end
-	hlgroup = "DiagnosticVirtualTextInfo"
-	if vim.fn.hlexists("HaskellVariableDeclaredWithinScope") == 0 then
-		vim.cmd([[hi! link HaskellVariableDeclaredWithinScope ]] .. hlgroup)
-	end
-	hlgroup = "DiagnosticVirtualTextHint"
-	if vim.fn.hlexists("HaskellVariableDeclarationWithinScope") == 0 then
-		vim.cmd([[hi! link HaskellVariableDeclarationWithinScope ]] .. hlgroup)
-	end
-
-	hlgroup = "DiagnosticVirtualTextError"
-	if vim.fn.hlexists("HaskellVariableNotDeclaredWithinFile") == 0 then
-		vim.cmd([[hi! link HaskellVariableNotDeclaredWithinFile ]] .. hlgroup)
-	end
-
-	-- HaskellVariableDeclarationWithinScope
-	-- HaskellVariableDeclaredWithinParent1
-	-- HaskellVariableDeclaredWithinParent2
-	-- HaskellVariableDeclaredWithinParent3
-	-- HaskellVariableDeclaredWithinFile
-	-- HaskellVariableDeclaredOutsideFile
 
 	if opts.enable then
 		M.enable()
