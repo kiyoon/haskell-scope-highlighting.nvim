@@ -119,7 +119,7 @@ function M.capture_at_point(query_string, query_group, pos, bufnr, opts)
 	return bufnr, range, node
 end
 
-function M.captures_within_node(query_string, query_group, node, bufnr, opts)
+function M.captures(query_string, query_group, bufnr, opts)
 	query_group = query_group or "scope_highlighting"
 	opts = opts or {}
 	bufnr = bufnr or vim.api.nvim_get_current_buf()
@@ -134,11 +134,26 @@ function M.captures_within_node(query_string, query_group, node, bufnr, opts)
 	end
 
 	local matches = queries.get_capture_matches_recursively(bufnr, query_string, query_group)
+	local match_nodes = {}
+	for _, m in pairs(matches) do
+		table.insert(match_nodes, m.node)
+	end
+	return bufnr, match_nodes
+end
+
+function M.matches_within_node(matches, node, bufnr, opts)
+	opts = opts or {}
+	bufnr = bufnr or vim.api.nvim_get_current_buf()
+	local lang = parsers.get_buf_lang(bufnr)
+	if not lang then
+		return
+	end
+
 	local filtered_matches = {}
 	for _, m in pairs(matches) do
-		local range = { vim.treesitter.get_node_range(m.node) }
-		if m.node and vim.treesitter.node_contains(node, range) then
-			table.insert(filtered_matches, m.node)
+		local range = { vim.treesitter.get_node_range(m) }
+		if m and vim.treesitter.node_contains(node, range) then
+			table.insert(filtered_matches, m)
 		end
 	end
 	return bufnr, filtered_matches

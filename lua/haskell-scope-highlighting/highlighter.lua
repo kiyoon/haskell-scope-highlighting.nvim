@@ -25,18 +25,40 @@ function M.setup(opts)
 	if vim.fn.hlexists("HaskellCurrentScope") == 0 then
 		vim.cmd([[hi! link HaskellCurrentScope ]] .. hlgroup)
 	end
-	if vim.fn.hlexists("HaskellOutsideScope") == 0 then
-		vim.cmd([[hi! link HaskellOutsideScope ]] .. hlgroup)
+
+	for i = 1, 9 do
+		if vim.fn.hlexists("HaskellParentScope" .. i) == 0 then
+			vim.cmd([[hi HaskellParentScope]] .. i .. [[ guibg=#]] .. i .. i .. i .. i .. i .. i)
+		end
+		if vim.fn.hlexists("HaskellVariableDeclaredWithinParent" .. i) == 0 then
+			vim.cmd([[hi! HaskellVariableDeclaredWithinParent]] .. i .. [[ guifg=#]] .. i .. i .. i .. i .. i .. i)
+		end
 	end
 
-	hlgroup = "DiagnosticVirtualTextError"
-	if vim.fn.hlexists("HaskellVariableDeclaredOutsideScope") == 0 then
-		vim.cmd([[hi! link HaskellVariableDeclaredOutsideScope ]] .. hlgroup)
+	hlgroup = "Keyword"
+	if vim.fn.hlexists("HaskellVariableDeclaredWithinFile") == 0 then
+		vim.cmd([[hi! link HaskellVariableDeclaredWithinFile ]] .. hlgroup)
 	end
 	hlgroup = "DiagnosticVirtualTextInfo"
 	if vim.fn.hlexists("HaskellVariableDeclaredWithinScope") == 0 then
 		vim.cmd([[hi! link HaskellVariableDeclaredWithinScope ]] .. hlgroup)
 	end
+	hlgroup = "DiagnosticVirtualTextHint"
+	if vim.fn.hlexists("HaskellVariableDeclarationWithinScope") == 0 then
+		vim.cmd([[hi! link HaskellVariableDeclarationWithinScope ]] .. hlgroup)
+	end
+
+	hlgroup = "DiagnosticVirtualTextError"
+	if vim.fn.hlexists("HaskellVariableNotDeclaredWithinFile") == 0 then
+		vim.cmd([[hi! link HaskellVariableNotDeclaredWithinFile ]] .. hlgroup)
+	end
+
+	-- HaskellVariableDeclarationWithinScope
+	-- HaskellVariableDeclaredWithinParent1
+	-- HaskellVariableDeclaredWithinParent2
+	-- HaskellVariableDeclaredWithinParent3
+	-- HaskellVariableDeclaredWithinFile
+	-- HaskellVariableDeclaredOutsideFile
 
 	if opts.enable then
 		M.enable()
@@ -125,24 +147,51 @@ function M.update()
 		{}
 	)
 
-	if scope_range == nil then
+	if scope_range == nil or scope_node == nil then
 		return
 	end
 
 	M.set_hlgroup(bufnr, ns_highlight, scope_range, "HaskellCurrentScope", 90)
 
+	local parent_nodes = {}
+
+	local parent_node = scope_node:parent()
+	local i = 1
+	while parent_node ~= nil do
+		table.insert(parent_nodes, parent_node)
+		local parent_scope_range = { vim.treesitter.get_node_range(parent_node) }
+		M.set_hlgroup(bufnr, ns_highlight, parent_scope_range, "HaskellParentScope" .. i, 90 - i)
+		i = i + 1
+		parent_node = parent_node:parent()
+	end
+
+	local _, variable_declaration_matches =
+		hs_treesitter.captures("@variable_declaration", "scope_highlighting", bufnr, {})
+	local _, variable_expression_matches =
+		hs_treesitter.captures("@variable_expression", "scope_highlighting", bufnr, {})
+
 	local _, variable_declaration_nodes =
-		hs_treesitter.captures_within_node("@variable_declaration", "scope_highlighting", scope_node, bufnr, {})
+		hs_treesitter.matches_within_node(variable_declaration_matches, scope_node, bufnr, {})
 	local _, variable_expression_nodes =
-		hs_treesitter.captures_within_node("@variable_expression", "scope_highlighting", scope_node, bufnr, {})
+		hs_treesitter.matches_within_node(variable_expression_matches, scope_node, bufnr, {})
 
 	local _, declared_variables_in_key = hs_treesitter.unique_node_texts(variable_declaration_nodes, bufnr)
 	-- local expr_variables, expr_variabled_in_key = hs_treesitter.unique_node_texts(variable_expression_nodes)
+	local _, declared_variables_in_file = hs_treesitter.unique_node_texts(variable_declaration_matches, bufnr)
+
+	local variable_declared_parents = {}
+
+	for i, parent_node in ipairs(parent_nodes) do
+		local _, variable_declaration_nodes_in_parent =
+			hs_treesitter.matches_within_node(variable_declaration_matches, parent_node, bufnr, {})
+		local _, declared_variables = hs_treesitter.unique_node_texts(variable_declaration_nodes_in_parent, bufnr)
+		variable_declared_parents[i] = declared_variables
+	end
 
 	if variable_declaration_nodes ~= nil then
 		for _, node in ipairs(variable_declaration_nodes) do
 			local range = { vim.treesitter.get_node_range(node) }
-			M.set_hlgroup(bufnr, ns_highlight, range, "HaskellVariableDeclaredWithinScope", 110)
+			M.set_hlgroup(bufnr, ns_highlight, range, "HaskellVariableDeclarationWithinScope", 110)
 		end
 	end
 
@@ -151,13 +200,31 @@ function M.update()
 			local text = vim.treesitter.query.get_node_text(node, bufnr)
 
 			local range = { vim.treesitter.get_node_range(node) }
-			local hlgroup
-			if text ~= nil and declared_variables_in_key[text] then
+			local hlgroup = nil
+			if text == nil then
+				goto continue
+			end
+			if declared_variables_in_key[text] then
 				hlgroup = "HaskellVariableDeclaredWithinScope"
 			else
-				hlgroup = "HaskellVariableDeclaredOutsideScope"
+				for i, declared_in_parents in ipairs(variable_declared_parents) do
+					if declared_in_parents[text] then
+						hlgroup = "HaskellVariableDeclaredWithinParent" .. i
+						break
+					end
+				end
+
+				if hlgroup == nil then
+					if declared_variables_in_file[text] then
+						hlgroup = "HaskellVariableDeclaredWithinFile"
+					else
+						hlgroup = "HaskellVariableNotDeclaredWithinFile"
+					end
+				end
 			end
 			M.set_hlgroup(bufnr, ns_highlight, range, hlgroup, 110)
+
+			::continue::
 		end
 	end
 end

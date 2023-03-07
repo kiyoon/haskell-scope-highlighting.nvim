@@ -6,17 +6,15 @@
 ; (quoter) @function.call
 
 [
- (guard_equation)
  (exp_lambda)
  (function)
  (exp_do)
- (stmt)
 ] @scope
 
 
 (function name: (variable) @variable_declaration)
 (pat_name (variable) @variable_declaration)
 
-(exp_name (variable) @variable_expression (#not-any-of? @variable_expression "return" "readArray" "getBounds" "liftIO" "otherwise"))
+(exp_name (variable) @variable_expression (#not-any-of? @variable_expression "return" "otherwise"))
 (exp_name (qualified_variable) @variable_expression)
 
