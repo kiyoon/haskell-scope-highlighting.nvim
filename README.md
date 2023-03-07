@@ -7,11 +7,18 @@ This plugin mainly does these two.
 1. Scope indication
 2. Free variable, bound variable highlighting
 
-Original idea inspired by prof. Douglas Crockford known as `Context Coloring`: [YouTube](https://youtu.be/b0EF0VTs9Dc?t=899). Idea expanded to Haskell with dynamic scope under cursor by @lionhairdino.
 
-![Context Coloring](https://user-images.githubusercontent.com/12980409/223306767-f3f3f92b-f88a-4ad1-80b4-80bd7826a321.png)
+![image](https://user-images.githubusercontent.com/12980409/223523834-9417290e-37f1-4b37-aa6f-1cb264b2d502.png)  
+(Other highlightings have been turned off to describe its effect better)  
 
 WIP
+
+## Inspiration
+
+Original idea inspired by prof. Douglas Crockford known as [Context Coloring (Click to see on YouTube)](https://youtu.be/b0EF0VTs9Dc?t=899).  
+![Context Coloring](https://user-images.githubusercontent.com/12980409/223306767-f3f3f92b-f88a-4ad1-80b4-80bd7826a321.png)
+
+The idea has been expanded for Haskell with dynamic scope under the cursor by @lionhairdino.
 
 ## Installation
 
@@ -76,9 +83,3 @@ hi! HaskellVariableNotDeclaredWithinFile guifg=red
 :HaskellScopeHighlightingEnable
 :HaskellScopeHighlightingDisable
 ```
-
-
-## Todo
-
-1. Increase / decrease scope commands
-2. Parent scope detection
