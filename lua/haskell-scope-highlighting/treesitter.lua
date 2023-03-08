@@ -4,6 +4,23 @@ local ts_utils = require("nvim-treesitter.ts_utils")
 
 local M = {}
 
+function M.is_in_node_range(node, line, col)
+	local start_line, start_col, end_line, end_col = node:range()
+	if line >= start_line and line <= end_line then
+		if line == start_line and line == end_line then
+			return col >= start_col and col < end_col
+		elseif line == start_line then
+			return col >= start_col
+		elseif line == end_line then
+			return col < end_col
+		else
+			return true
+		end
+	else
+		return false
+	end
+end
+
 --- Get the best match at a given point
 --- If the point is inside a node, the smallest node is returned
 --- If the point is not inside a node, the closest node is returned (if opts.lookahead or opts.lookbehind is true)
@@ -24,7 +41,7 @@ local best_match_at_point = function(matches, row, col, opts)
 	local lookbehind_earliest_start
 
 	for _, m in pairs(matches) do
-		if m.node and vim.treesitter.is_in_node_range(m.node, row, col) then
+		if m.node and M.is_in_node_range(m.node, row, col) then
 			local length = ts_utils.node_length(m.node)
 			if not match_length or length < match_length then
 				smallest_range = m
@@ -96,6 +113,37 @@ local best_match_at_point = function(matches, row, col, opts)
 	end
 end
 
+--- Sort matches from smallest to largest
+---@param matches table list of matches
+---@param row number 0-indexed
+---@param col number 0-indexed
+local sort_matches_at_point = function(matches, row, col)
+	local matches_at_point = {}
+	for _, m in pairs(matches) do
+		if m.node and M.is_in_node_range(m.node, row, col) then
+			table.insert(matches_at_point, m)
+		end
+	end
+
+	table.sort(matches_at_point, function(a, b)
+		local a_length = ts_utils.node_length(a.node)
+		local b_length = ts_utils.node_length(b.node)
+		if a_length == b_length then
+			if a.start and b.start then
+				local _, _, a_start_byte = a.start.node:start()
+				local _, _, b_start_byte = b.start.node:start()
+				return a_start_byte < b_start_byte
+			else
+				return false
+			end
+		else
+			return a_length < b_length
+		end
+	end)
+
+	return matches_at_point
+end
+
 --- Get the best match at a given point
 ---@param pos table {row, col} 0-indexed
 function M.capture_at_point(query_string, query_group, pos, bufnr, opts)
@@ -117,6 +165,28 @@ function M.capture_at_point(query_string, query_group, pos, bufnr, opts)
 	local matches = queries.get_capture_matches_recursively(bufnr, query_string, query_group)
 	local range, node = best_match_at_point(matches, row, col, opts)
 	return bufnr, range, node
+end
+
+--- Get the matches at a given point, smallest to largest
+---@param pos table {row, col} 0-indexed
+function M.captures_at_point_sorted(query_string, query_group, pos, bufnr)
+	query_group = query_group or "scope_highlighting"
+	bufnr = bufnr or vim.api.nvim_get_current_buf()
+	local lang = parsers.get_buf_lang(bufnr)
+	if not lang then
+		return
+	end
+
+	local row, col = unpack(pos or vim.api.nvim_win_get_cursor(0))
+
+	if not string.match(query_string, "^@.*") then
+		error('Captures must start with "@"')
+		return
+	end
+
+	local matches = queries.get_capture_matches_recursively(bufnr, query_string, query_group)
+	local matches_at_point = sort_matches_at_point(matches, row, col)
+	return bufnr, matches_at_point
 end
 
 function M.captures(query_string, query_group, bufnr, opts)

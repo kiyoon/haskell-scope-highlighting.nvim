@@ -145,35 +145,31 @@ function M.update()
 		return
 	end
 
-	local end_of_file = vim.fn.line("$")
-
 	local cursor_pos = vim.api.nvim_win_get_cursor(0)
 	local cursor_row, cursor_col = cursor_pos[1] - 1, cursor_pos[2]
 
-	local bufnr, scope_range, scope_node = hs_treesitter.capture_at_point(
-		"@scope",
-		"scope_highlighting",
-		{ cursor_row, cursor_col },
-		0,
-		{}
-	)
+	local bufnr, scope_matches =
+		hs_treesitter.captures_at_point_sorted("@scope", "scope_highlighting", { cursor_row, cursor_col }, 0)
 
-	if scope_range == nil or scope_node == nil then
+	local current_scope = scope_matches[1]
+	if current_scope == nil then
 		return
 	end
+
+	local scope_node = current_scope.node
+	local scope_range = { scope_node:range() }
 
 	M.set_hlgroup(bufnr, ns_highlight, scope_range, "HaskellCurrentScope", 90)
 
 	local parent_nodes = {}
 
-	local parent_node = scope_node:parent()
-	local i = 1
-	while parent_node ~= nil do
-		table.insert(parent_nodes, parent_node)
-		local parent_scope_range = { vim.treesitter.get_node_range(parent_node) }
-		M.set_hlgroup(bufnr, ns_highlight, parent_scope_range, "HaskellParentScope" .. i, 90 - i)
-		i = i + 1
-		parent_node = parent_node:parent()
+	if #scope_matches > 1 then
+		for i = 2, #scope_matches do
+			local parent_node = scope_matches[i].node
+			table.insert(parent_nodes, parent_node)
+			local parent_scope_range = { parent_node:range() }
+			M.set_hlgroup(bufnr, ns_highlight, parent_scope_range, "HaskellParentScope" .. i, 90 - i)
+		end
 	end
 
 	local _, variable_declaration_matches =
