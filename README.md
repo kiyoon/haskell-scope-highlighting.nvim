@@ -7,8 +7,12 @@ This plugin mainly does these two.
 1. Scope indication
 2. Free variable, bound variable highlighting
 
+ [Screencast from 07-03-23 20:06:09.webm](https://user-images.githubusercontent.com/12980409/223540476-e8e33ced-ed41-402b-ac95-f3faa5b592e2.webm)
+ 
+- Blue: Variabled defined within the current scope  
+- Green: Variable defined within the parent scope
+- Orange: Variable NOT defined within the file
 
-![image](https://user-images.githubusercontent.com/12980409/223523834-9417290e-37f1-4b37-aa6f-1cb264b2d502.png)  
 (Other highlightings have been turned off to describe its effect better)  
 
 WIP
