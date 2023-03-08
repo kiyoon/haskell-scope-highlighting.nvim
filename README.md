@@ -85,7 +85,63 @@ Dynamic context highlighting can be used with treesitter highlighting, but it ca
 If you feel the same, you can configure treesitter highlighting yourself.
 
 Create a file in `~/.config/nvim/queries/haskell/highlights.scm` to define treesitter highlighting on your own.  
-You can find the query file from [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter/blob/master/queries/haskell/highlights.scm).
+You can find [the query file from nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter/blob/master/queries/haskell/highlights.scm).
+
+<details>
+<summary>
+Click to see an example partial highlighting setup.
+</summary>
+
+```scm
+(con_unit) @symbol  ; unit, as in ()
+
+(comment) @comment
+
+;; ----------------------------------------------------------------------------
+;; Functions and variables
+
+(variable) @variable
+(pat_wildcard) @variable
+(signature name: (variable) @variable)
+
+(function
+  name: (variable) @function
+  patterns: (patterns))
+(function
+  name: (variable) @function
+  rhs: (exp_lambda))
+((signature (variable) @function (fun)) . (function (variable)))
+((signature (variable) @_type (fun)) . (function (variable) @function) (#eq? @function @_type))
+((signature (variable) @function (context (fun))) . (function (variable)))
+((signature (variable) @_type (context (fun))) . (function (variable) @function) (#eq? @function @_type))
+((signature (variable) @function (forall (context (fun)))) . (function (variable)))
+((signature (variable) @_type (forall (context (fun)))) . (function (variable) @function) (#eq? @function @_type))
+
+(exp_infix (variable) @operator)  ; consider infix functions as operators
+(exp_section_right (variable) @operator) ; partially applied infix functions (sections) also get highlighted as operators
+(exp_section_left (variable) @operator)
+
+(exp_infix (exp_name) @function.call (#set! "priority" 101))
+(exp_apply . (exp_name (variable) @function.call))
+(exp_apply . (exp_name (qualified_variable (variable) @function.call)))
+
+
+;; ----------------------------------------------------------------------------
+;; Types
+
+(type) @type
+(type_star) @type
+(type_variable) @type
+
+(constructor) @constructor
+
+;; ----------------------------------------------------------------------------
+;; Quasi-quotes
+
+(quoter) @function.call
+; Highlighting of quasiquote_body is handled by injections.scm
+```
+</details>
 
 ## Commands
 
