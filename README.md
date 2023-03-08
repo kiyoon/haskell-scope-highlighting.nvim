@@ -15,6 +15,9 @@ This plugin mainly does these two.
 
 (Other highlightings have been turned off to describe its effect better)  
 
+You can add different colours for each depth of scope.  
+![Peek_2023-03-08_23-37](https://user-images.githubusercontent.com/12980409/223754740-22d2f934-b6c7-4b66-b56f-f678b95bb0e8.gif)
+
 WIP
 
 ## Inspiration
