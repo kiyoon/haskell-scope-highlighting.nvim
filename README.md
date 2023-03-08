@@ -12,6 +12,7 @@ This plugin mainly does these two.
 - Blue: Variabled defined within the current scope  
 - Green: Variable defined within the parent scope
 - Orange: Variable NOT defined within the file
+
 (Other highlightings have been turned off to describe its effect better)  
 
 WIP
