@@ -1,6 +1,7 @@
 local parsers = require("nvim-treesitter.parsers")
 local queries = require("nvim-treesitter.query")
 local ts_utils = require("nvim-treesitter.ts_utils")
+local ts = require("nvim-treesitter.compat")
 
 local M = {}
 
@@ -232,7 +233,7 @@ end
 function M.unique_node_texts(nodes, bufnr)
 	local texts_in_key = {}
 	for _, node in pairs(nodes) do
-		local text = vim.treesitter.query.get_node_text(node, bufnr)
+		local text = ts.get_node_text(node, bufnr)
 
 		if text ~= nil then
 			texts_in_key[text] = true
