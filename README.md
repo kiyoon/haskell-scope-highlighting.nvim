@@ -100,45 +100,31 @@ Click to see an example partial highlighting setup.
 </summary>
 
 ```scm
-(con_unit) @symbol  ; unit, as in ()
-
 (comment) @comment
+(comment) @spell
 
 ;; ----------------------------------------------------------------------------
 ;; Functions and variables
 
 (variable) @variable
-(pat_wildcard) @variable
-(signature name: (variable) @variable)
-
-(function
-  name: (variable) @function
-  patterns: (patterns))
-(function
-  name: (variable) @function
-  rhs: (exp_lambda))
-((signature (variable) @function (fun)) . (function (variable)))
-((signature (variable) @_type (fun)) . (function (variable) @function) (#eq? @function @_type))
-((signature (variable) @function (context (fun))) . (function (variable)))
-((signature (variable) @_type (context (fun))) . (function (variable) @function) (#eq? @function @_type))
-((signature (variable) @function (forall (context (fun)))) . (function (variable)))
-((signature (variable) @_type (forall (context (fun)))) . (function (variable) @function) (#eq? @function @_type))
-
-(exp_infix (variable) @operator)  ; consider infix functions as operators
-(exp_section_right (variable) @operator) ; partially applied infix functions (sections) also get highlighted as operators
-(exp_section_left (variable) @operator)
-
-(exp_infix (exp_name) @function.call (#set! "priority" 101))
-(exp_apply . (exp_name (variable) @function.call))
-(exp_apply . (exp_name (qualified_variable (variable) @function.call)))
-
+(pattern/wildcard) @variable
+(decl/signature name: (variable) @variable)
 
 ;; ----------------------------------------------------------------------------
 ;; Types
 
-(type) @type
-(type_star) @type
-(type_variable) @type
+(type/unit) @type
+
+(type/unit [
+  "("
+  ")"
+] @type)
+
+(type/list [
+  "["
+  "]"
+] @type)
+(type/star) @type
 
 (constructor) @constructor
 

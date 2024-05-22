@@ -1,4 +1,5 @@
 
+; NOTE: These commented queries are outdated, for tree-sitter-haskell < v0.21
 ; @function.call from nvim-treesitter/queries/haskell/highlights.scm
 ; (exp_infix (exp_name) @function.call (#set! "priority" 101))
 ; (exp_apply . (exp_name (variable) @function.call))
@@ -6,15 +7,15 @@
 ; (quoter) @function.call
 
 [
- (exp_lambda)
+ (expression/lambda)
  (function)
- (exp_do)
+ (expression/do)
 ] @scope
 
 
 (function name: (variable) @variable_declaration)
-(pat_name (variable) @variable_declaration)
+(pattern (variable) @variable_declaration)
 
-(exp_name (variable) @variable_expression (#not-any-of? @variable_expression "return" "otherwise"))
-(exp_name (qualified_variable) @variable_expression)
+(expression (variable) @variable_expression (#not-any-of? @variable_expression "return" "otherwise"))
+(expression (qualified (variable)) @variable_expression)
 
