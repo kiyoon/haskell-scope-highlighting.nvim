@@ -1,5 +1,6 @@
 local hs_treesitter = require("haskell-scope-highlighting.treesitter")
 local utils = require("haskell-scope-highlighting.utils")
+local ts = require("nvim-treesitter.compat")
 local M = {}
 
 M.options = {
@@ -204,7 +205,7 @@ function M.update()
 
 	if variable_expression_nodes ~= nil then
 		for _, node in ipairs(variable_expression_nodes) do
-			local text = vim.treesitter.query.get_node_text(node, bufnr)
+			local text = ts.get_node_text(node, bufnr)
 
 			local range = { vim.treesitter.get_node_range(node) }
 			local hlgroup = nil
