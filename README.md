@@ -84,7 +84,22 @@ hi! HaskellVariableDeclaredWithinFile guifg=orange
 hi! HaskellVariableNotDeclaredWithinFile guifg=red
 ```
 
-If you want to see only up to depth 1, you can just set the same colour for Parent2, 3, ..., N.  
+If you want to see only up to depth 1, you can just set the same colour for Parent2, 3, ..., N. The below example shows gradient colour up to Parent10.
+
+```lua
+local i = 1
+repeat
+  -- orange = #dc9271
+  local color = string.format("%d guifg=#%02x%02x%02x",i,
+    220 - (i*10)% 220,
+    92 - (i*20) % 92,
+    72 + (i*20) % 184
+  )
+  vim.cmd("hi HaskellVariableDeclaredWithinParent"..color)
+  vim.cmd("hi HaskellParentScope"..i.." guibg=#2d353b")
+  i = i + 1
+until (i > 10)
+```
 
 ### Partially enable nvim-treesitter highlighting.
 
