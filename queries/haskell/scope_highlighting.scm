@@ -8,14 +8,13 @@
 
 [
  (expression/lambda)
- (function)
+ (decl/function)
  (expression/do)
+ (decl/signature)
 ] @scope
 
-
-(function name: (variable) @variable_declaration)
-(pattern (variable) @variable_declaration)
-
-(expression (variable) @variable_expression (#not-any-of? @variable_expression "return" "otherwise"))
-(expression (qualified (variable)) @variable_expression)
+(decl/function name: (variable) @variable_declaration)
+(pattern/variable) @variable_declaration
+(expression/variable) @variable_expression (#not-any-of? @variable_expression "return" "otherwise")
+(expression/qualified (variable) @variable_expression)
 
