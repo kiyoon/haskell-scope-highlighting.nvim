@@ -1,6 +1,6 @@
 # haskell-scope-highlighting.nvim
 
-Acutally useful context highlighting, that distinguishes variables that come from within the scope (i.e. bound variable) and outside of it (i.e. free variable).
+Actually useful context highlighting, that distinguishes variables that come from within the scope (i.e. bound variable) and outside of it (i.e. free variable).
 
 This plugin mainly does these two.
 
@@ -9,7 +9,7 @@ This plugin mainly does these two.
 
  [Screencast from 07-03-23 20:06:09.webm](https://user-images.githubusercontent.com/12980409/223540476-e8e33ced-ed41-402b-ac95-f3faa5b592e2.webm)
  
-- Blue: Variabled defined within the current scope  
+- Blue: Variable defined within the current scope  
 - Green: Variable defined within the parent scope
 - Orange: Variable NOT defined within the file
 
@@ -18,11 +18,9 @@ This plugin mainly does these two.
 You can add different colours for each depth of scope.  
 ![Peek_2023-03-08_23-37](https://user-images.githubusercontent.com/12980409/223754740-22d2f934-b6c7-4b66-b56f-f678b95bb0e8.gif)
 
-WIP
-
 ## Inspiration
 
-Original idea inspired by prof. Douglas Crockford known as [Context Coloring (Click to see on YouTube)](https://youtu.be/b0EF0VTs9Dc?t=899).  
+The original idea was inspired by prof. Douglas Crockford, known as [Context Coloring (Click to see on YouTube)](https://youtu.be/b0EF0VTs9Dc?t=899).  
 ![Context Coloring](https://user-images.githubusercontent.com/12980409/223306767-f3f3f92b-f88a-4ad1-80b4-80bd7826a321.png)
 
 The idea has been expanded for Haskell with dynamic scope under the cursor by @lionhairdino.
@@ -40,7 +38,7 @@ With lazy.nvim,
     init = function()
       -- Consider disabling other highlighting
       vim.cmd [[autocmd FileType haskell syntax off]]
-      vim.cmd [[autocmd FileType haskell TSDIsable highlight]]
+      vim.cmd [[autocmd FileType haskell TSDisable highlight]]
     end
   },
 ```
@@ -103,7 +101,7 @@ until (i > 10)
 
 ### Partially enable nvim-treesitter highlighting.
 
-Dynamic context highlighting can be used with treesitter highlighting, but it can be distracting to have all highlighting enabled.  
+Dynamic context highlighting can be used with tree-sitter highlighting, but having all highlighting enabled can be distracting.  
 If you feel the same, you can configure treesitter highlighting yourself.
 
 Create a file in `~/.config/nvim/queries/haskell/highlights.scm` to define treesitter highlighting on your own.  
@@ -111,7 +109,7 @@ You can find [the query file from nvim-treesitter](https://github.com/nvim-trees
 
 <details>
 <summary>
-Click to see an example partial highlighting setup.
+Click to see an example of a partial highlighting setup.
 </summary>
 
 ```scm
