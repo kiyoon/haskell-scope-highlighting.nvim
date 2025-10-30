@@ -18,23 +18,26 @@ This plugin mainly does these two.
 You can add different colours for each depth of scope.  
 ![Peek_2023-03-08_23-37](https://user-images.githubusercontent.com/12980409/223754740-22d2f934-b6c7-4b66-b56f-f678b95bb0e8.gif)
 
-## Inspiration
+## 💡 Inspiration
 
 The original idea was inspired by prof. Douglas Crockford, known as [Context Coloring (Click to see on YouTube)](https://youtu.be/b0EF0VTs9Dc?t=899).  
 ![Context Coloring](https://user-images.githubusercontent.com/12980409/223306767-f3f3f92b-f88a-4ad1-80b4-80bd7826a321.png)
 
 The idea has been expanded for Haskell with dynamic scope under the cursor by @lionhairdino.
 
-## Installation
+## 🛠️ Installation
+
+**Requirements:**
+
+- Neovim 0.10+
+- Haskell tree-sitter parser installed. (Usually done via nvim-treesitter)
+    - nvim-treesitter is no longer a hard dependency. You can also use the main branch of nvim-treesitter.
 
 With lazy.nvim,
 
 ```lua
   {
     "kiyoon/haskell-scope-highlighting.nvim",
-    dependencies = {
-      "nvim-treesitter/nvim-treesitter",
-    },
     init = function()
       -- Consider disabling other highlighting
       vim.cmd [[autocmd FileType haskell syntax off]]
